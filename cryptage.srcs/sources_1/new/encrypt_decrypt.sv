@@ -1,17 +1,17 @@
 module encrypt_decrypt (
     input  logic clk,                        // Horloge
-    input  logic rst,                        // Réinitialisation asynchrone
+    input  logic rst,                        
     input  logic key_ready[31:0],
     input  logic cryp_decryp,                  
-    input  logic [15:0] data_in[1:0],        // Texte clair (2 blocs de 16 bits)
+    input  logic [15:0] data_in[1:0],        
     input  logic [15:0] key[31:0],           // Tableau de 32 clés
     output logic sel,
     output logic [15:0] crypt_out[1:0]       // Texte chiffré (2 blocs de 16 bits)
 );
 
     // Variables internes
-    logic [15:0] crypt[1:0];                 // Texte intermédiaire
-    logic [4:0] round;                           // Index pour la boucle
+    logic [15:0] crypt[1:0];          
+    logic [4:0] round;                          
 
 
     always_comb begin
