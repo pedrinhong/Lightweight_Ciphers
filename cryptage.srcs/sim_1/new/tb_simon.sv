@@ -44,8 +44,8 @@ module tb_simon;
         #200;
 
         // Étape 3 : Tester le chiffrement
-        cryp_decryp = 1;  // Mode chiffrement
-        #500;             // Attendre la fin du chiffrement
+        cryp_decryp = 0;  // Mode chiffrement
+        #1000;             // Attendre la fin du chiffrement
 
         // Affichage des résultats chiffrés
         $display("Chiffrement terminé : crypt_out[0] = %h, crypt_out[1] = %h", crypt_out[0], crypt_out[1]);
@@ -54,7 +54,7 @@ module tb_simon;
         text_in[0] = crypt_out[0];  // Utiliser les données chiffrées comme entrée
         text_in[1] = crypt_out[1];
         cryp_decryp = 0;            // Mode déchiffrement
-        #500;                       // Attendre la fin du déchiffrement
+        #1000;                       // Attendre la fin du déchiffrement
 
         // Affichage des résultats déchiffrés
         $display("Déchiffrement terminé : crypt_out[0] = %h, crypt_out[1] = %h", crypt_out[0], crypt_out[1]);
