@@ -2,11 +2,11 @@
 
 module simon(
     input  logic clk,                     // Horloge principale
-    input  logic rst,                     // Réinitialisation asynchrone
+    input  logic rst,                     
     input  logic cryp_decryp,             // Signal pour choisir chiffrement (1) ou déchiffrement (0)
-    input  logic [15:0] k_in[3:0],        // Les 4 clés initiales (16 bits chacune)
-    input  logic [15:0] text_in[1:0],     // Texte clair ou crypté (2 blocs de 16 bits)
-    output logic [15:0] crypt_out[1:0]    // Texte chiffré ou déchiffré (2 blocs de 16 bits)
+    input  logic [15:0] k_in[3:0],        // Les 4 clés initiales 
+    input  logic [15:0] text_in[1:0],     
+    output logic [15:0] crypt_out[1:0]    
 );
 
     // Signaux internes
