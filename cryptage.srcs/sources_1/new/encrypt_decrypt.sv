@@ -1,4 +1,6 @@
 module encrypt_decrypt (
+    output logic done,
+    //input new_data,
     input  logic clk,                        // Horloge
     input  logic rst,                        // Réinitialisation asynchrone
     input  logic key_ready[31:0],
@@ -11,7 +13,7 @@ module encrypt_decrypt (
 
     // Variables internes
     logic [15:0] crypt[1:0];                 // Texte intermédiaire
-    logic [4:0] round;                           // Index pour la boucle
+    logic [4:0] round;                       // Index pour la boucle
 
 
     always_comb begin
@@ -25,7 +27,6 @@ module encrypt_decrypt (
     
     always_comb begin
         if ((round == 0 && cryp_decryp == 0) || (round == 31 && cryp_decryp == 1)) begin
-
             sel = 0;
         end
         else begin
@@ -47,19 +48,22 @@ module encrypt_decrypt (
                 crypt_out[1] <= crypt[1];
                 if (cryp_decryp == 0) begin
                     if (round >= 32) begin
+                        done  <=1;
                         round <=0;
                     end
                     else begin
-                            round = round + 1;
-                        
+                        round = round + 1;
+                        done  <=0;
                     end
                 end
                 else begin
                     if (round < 0 ) begin
                         round <= 32;
+                        done  <=1;
                     end
                     else begin
                         round = round - 1;
+                        done  <=0;
                     end
                 end
             end
