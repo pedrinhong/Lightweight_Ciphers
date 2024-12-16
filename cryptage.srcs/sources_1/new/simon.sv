@@ -2,7 +2,7 @@
 
 module simon(
     output logic done,
-    // input new_data,
+    input  logic wait_data,
     input  logic clk,                     // Horloge principale
     input  logic rst,                     // Réinitialisation asynchrone
     input  logic cryp_decryp,             // Signal pour choisir chiffrement (1) ou déchiffrement (0)
@@ -28,6 +28,7 @@ module simon(
 
     // Instanciation du module encrypt_decrypt
     encrypt_decrypt encrypt_decrypt_inst (
+        .wait_data(wait_data),
         .done(done),
         .clk(clk),
         .rst(rst),

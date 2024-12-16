@@ -1,6 +1,6 @@
-module encrypt_decrypt (
+module encrypt_decrypt(
     output logic done,
-    //input new_data,
+    input logic  wait_data,
     input  logic clk,                        // Horloge
     input  logic rst,                        // Réinitialisation asynchrone
     input  logic key_ready[31:0],
@@ -42,30 +42,35 @@ module encrypt_decrypt (
             round        <= 'h0;
         end 
         else begin
-            if (key_ready[round]) begin
-                // Assignation des résultats
-                crypt_out[0] <= crypt[0];
-                crypt_out[1] <= crypt[1];
-                if (cryp_decryp == 0) begin
-                    if (round >= 32) begin
-                        done  <=1;
-                        round <=0;
+            if (wait_data) begin
+                round <=0;
+            end
+            else begin
+                if (key_ready[round]) begin
+                    // Assignation des résultats
+                    crypt_out[0] <= crypt[0];
+                    crypt_out[1] <= crypt[1];
+                    if (cryp_decryp == 0) begin
+                        if (round >= 32) begin
+                            done  <=1;
+                            round <=0;
+                        end
+                        else begin
+                            round = round + 1;
+                            done  <=0;
+                        end
                     end
                     else begin
-                        round = round + 1;
-                        done  <=0;
-                    end
-                end
-                else begin
-                    if (round < 0 ) begin
-                        round <= 32;
-                        done  <=1;
-                    end
-                    else begin
-                        round = round - 1;
-                        done  <=0;
-                    end
-                end
+                        if (round < 0 ) begin
+                            round <= 32;
+                            done  <=1;
+                        end
+                        else begin
+                            round = round - 1;
+                            done  <=0;
+                        end
+                     end
+                  end   
             end
         end
     end

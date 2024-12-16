@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module key_expansion (
+module key_expansion(
     input  logic clk,                // Horloge
     input  logic rst,                // Réinitialisation asynchrone
     input  logic [15:0] k_in[3:0],   // Les 4 clés initiales en entrée (16 bits chacune)
@@ -44,7 +44,7 @@ logic [61:0] z0 = 62'b0110011100001101010010001011111011001110000110101001000101
 
         end else begin
             if (r_round >= 32) begin
-                r_round <=0;
+                r_round <= 'h4;
             end
             r_round <= r_round + 'h1;
             k_out[r_round] <= (~k_out[r_round - 'h4]) ^ tm2 ^ w_z ^ 16'h0003;
