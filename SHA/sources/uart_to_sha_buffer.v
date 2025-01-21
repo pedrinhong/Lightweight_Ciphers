@@ -17,7 +17,7 @@ module uart_to_sha_buffer (
         end else begin
             if (data_ready) begin
                 // Shift the incoming byte into the block (MSB first)
-                sha_block <= {sha_block[503:0], data_in}; 
+                sha_block <= {sha_block[511:0], data_in}; 
                 byte_count <= byte_count + 1;
                 block_ready <= 0;  // Clear block_ready until full block is received
 

@@ -1,3 +1,4 @@
+/*
 module uart_rx (
     input wire clk,       // 100MHz clock
     input wire rst,       // Reset signal
@@ -62,3 +63,4 @@ module uart_rx (
     end
 
 endmodule
+*/
