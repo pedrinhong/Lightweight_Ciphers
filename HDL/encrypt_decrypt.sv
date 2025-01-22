@@ -1,12 +1,11 @@
-module encrypt_decrypt(
-    output logic done,
+module encrypt_decrypt(    output logic done,
     input logic  wait_data,
-    input  logic clk,                        // Horloge
-    input  logic rst,                        // Réinitialisation asynchrone
-    input  logic key_ready[31:0],
-    input  logic cryp_decryp,                  
-    input  logic [15:0] data_in[1:0],        // Texte clair (2 blocs de 16 bits)
-    input  logic [15:0] key[31:0],           // Tableau de 32 clés
+    input logic clk,                        // Horloge
+    input logic rst,                        // Réinitialisation asynchrone
+    input logic key_ready[31:0],
+    input logic cryp_decryp,                  
+    input logic [15:0] data_in[1:0],        // Texte clair (2 blocs de 16 bits)
+    input logic [15:0] key[31:0],           // Tableau de 32 clés
     output logic sel,
     output logic [15:0] crypt_out[1:0]       // Texte chiffré (2 blocs de 16 bits)
 );

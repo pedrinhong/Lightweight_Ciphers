@@ -2,20 +2,23 @@
 `timescale 1ns / 1ps
 
 module top_level (
-    input  logic        clk,                   // Horloge
-    input  logic        resetn,                
-    input  logic        uart_rx_data,          // Données série reçues (entrée UART RX)
+    input  logic        clk,
+    input  logic        resetn,
+    input  logic        uart_rx_data,
     output logic        uart_tx_data,          // Données série transmises (sortie UART TX)
     output logic        led_input_commande,    // LED pour INPUT_COMMANDE
     output logic        led_key_input,         // LED pour KEY_INPUT
     output logic        led_text_input,        // LED pour TEXT_INPUT
     output logic        led_wait_result,       // LED pour WAIT_RESULT
     output logic        led_output_result,     // LED pour OUTPUT_RESULT
-    output logic        [7:0] data_out_test
-
+    output logic        [7:0] data_out_test,   // Test data output
+    output logic [255:0] sha_digest,            // SHA-256 digest output
+    output logic       digest_valid            // SHA-256 digest valid
 );
 
-
+     // Internal signals for SHA256 interface
+    logic [7:0] sha_data_in;         // Data input for SHA256
+    logic sha_data_ready;    
 
     // Signaux internes pour la communication entre la FSM, UART et SIMON
     logic [7:0] fsm_data_out;              // Données FSM vers UART
@@ -23,7 +26,7 @@ module top_level (
     logic [7:0] fsm_data_in;               // Données UART vers la FSM
     logic       fsm_control_in;            // Signal de réception UART vers la FSM
 
-    //logic       result_ready;              // Indicateur pour signaler que le résultat est prêt
+    logic       result_ready;              // Indicateur pour signaler que le résultat est prêt
     
     logic [7:0] k_in_fsm[7:0];                // Clés pour SIMON
     logic [7:0] text_in_fsm[3:0];             // Texte d'entrée pour SIMON
@@ -33,6 +36,16 @@ module top_level (
     logic [15:0] k_in[3:0];                // Clés pour SIMON
     logic [15:0] text_in[1:0];             // Texte d'entrée pour SIMON
     logic [15:0] crypt_out[1:0];           // Résultat du chiffrement/déchiffrement
+    
+    // SHA 256 signals 
+    
+   /*             
+    logic [7:0] data_in;     // Incoming UART byte
+    logic data_ready;        
+    logic [255:0] sha_digest;  // SHA-256 digest output
+    logic digest_valid;      
+    
+*/
 
     // Modules UART pour transmission et réception de données série
     wire uart_tx_done;
@@ -96,6 +109,32 @@ module top_level (
             default: data_out_test = 8'd0;           
         endcase
     end
+    
+    // Handle data received via UART for SHA-256
+    always_ff @(posedge clk) begin
+        if (~resetn) begin
+            sha_data_in <= 8'd0;  // Reset the SHA data input
+            sha_data_ready <= 0;  // Reset the data ready flag
+        end else begin
+            // Receiving data and setting up SHA256 input
+            if (fsm_control_in) begin  // Assuming fsm_control_in triggers UART data reception
+                sha_data_in <= fsm_data_in;   // Pass received UART data to SHA256
+                sha_data_ready <= 1;          // Indicate that data is ready for SHA256
+            end else begin
+                sha_data_ready <= 0;          // Reset flag when no data ready
+            end
+        end
+    end
+    
+    // Instantiate the UART to SHA-256 interface
+    uart_sha256_interface sha_interface (
+        .clk(clk),
+        .rst(~resetn),                  // Active-low reset
+        .data_in(sha_data_in),          // Data received via UART (to SHA256)
+        .data_ready(sha_data_ready),    // Flag indicating data is ready
+        .sha_digest(sha_digest),        // SHA-256 digest output
+        .digest_valid(digest_valid)     // Validity flag for SHA-256 digest
+    );
 
     // Instance de la FSM (gestion des états de l'algorithme)
     fsm u_fsm (
@@ -106,6 +145,13 @@ module top_level (
         .data_in(fsm_data_in),             // Données reçues depuis l'UART
         .control_in(fsm_control_in),       // Signal de contrôle de réception UART
         .result_ready(result_ready),       // Signal de résultat prêt
+        // SHA
+         
+        .data_ready(sha_data_ready),        // Signal indicating data_in is valid
+ //       .block_ready(block_ready),        // High when a full 512-bit block is ready
+        .digest_valid(digest_valid),
+ //        .sha_block(sha_block), // 512-bit output block
+             
         .control_out(fsm_control_out),     // Signal de contrôle pour l'UART
         .data_out(fsm_data_out),           // Données transmises vers UART
         .cryp_decryp(cryp_decryp),         // Signal pour SIMON (chiffrement/déchiffrement)
