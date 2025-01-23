@@ -48,8 +48,10 @@ module fsm (
         next_state = current_state;
         case (current_state)
             INPUT_COMMANDE: begin
-                    next_state  = (data_in[1:0] == SIMON) ? KEY_INPUT : INPUT_COMMANDE;
-                    cryp_decryp = ~ (data_in[1:0] == SIMON) ? 1 : 0;
+                    if (control_in) begin 
+                        next_state  = (data_in[1:0] == SIMON) ? KEY_INPUT : INPUT_COMMANDE;
+                        cryp_decryp = ~ (data_in[1:0] == SIMON) ? 1 : 0;
+                    end 
             end
 
             KEY_INPUT: begin

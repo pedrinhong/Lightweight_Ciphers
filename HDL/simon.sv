@@ -16,6 +16,7 @@ module simon(
     logic [15:0] data_in[1:0];
     logic key_ready[31:0];                // Signal de préparation des clés
     logic [15:0] k_out[31:0];             // Les 32 clés générées par key_expansion
+    logic [15:0] crypt_out_inside[1:0]; 
 
     // Instanciation du module key_expansion
     key_expansion key_exp_inst (
@@ -38,7 +39,8 @@ module simon(
         .data_in(data_in),
         .key(k_out),
         .sel(sel),
-        .crypt_out(crypt_out)
+        .crypt_out(crypt_out_inside),
+        .crypt_out_final(crypt_out)
     );
     
     //multiplexeur
@@ -47,7 +49,7 @@ module simon(
         .text_in(text_in),
         .sel(sel),
         .cryp_decryp(cryp_decryp),
-        .crypt_out(crypt_out),
+        .crypt_out(crypt_out_inside),
         .data_in(data_in)
     );
 

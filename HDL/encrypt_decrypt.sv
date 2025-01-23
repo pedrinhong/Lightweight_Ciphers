@@ -8,7 +8,8 @@ module encrypt_decrypt(
     input  logic [15:0] data_in[1:0],        // Texte clair (2 blocs de 16 bits)
     input  logic [15:0] key[31:0],           // Tableau de 32 clés
     output logic sel,
-    output logic [15:0] crypt_out[1:0]       // Texte chiffré (2 blocs de 16 bits)
+    output logic [15:0] crypt_out[1:0],       // Texte chiffré (2 blocs de 16 bits)
+    output logic [15:0] crypt_out_final[1:0]
 );
 
     // Variables internes
@@ -24,13 +25,6 @@ module encrypt_decrypt(
                            ({data_in[0][13:0], data_in[0][15:14]}) ^   // ROTATE_LEFT_16(crypt[0], 2)
                             key[round];
        crypt[1] <= data_in[0];
-       //end
-       //else begin
-            //crypt[0] <= data_in[0];
-            //crypt[1] <= data_in[1];
-       //end
-       
-       
     end
     
     always_comb begin
@@ -53,17 +47,19 @@ module encrypt_decrypt(
             else begin
                 round = 32;
             end
+            done  <=0; 
         end 
         else begin
-            if(key_ready[round]) begin
+            if(key_ready[round] && round < 32) begin
               // Assignation des résultats
               crypt_out[0] <= crypt[0];
               crypt_out[1] <= crypt[1];
             end
             if (cryp_decryp == 0) begin
-                if (round == 32) begin
+                if (round == 31) begin
                     done  <=1;
-                    //round <=0;
+                    crypt_out_final[0] <= data_in[0];
+                    crypt_out_final[1] <= data_in[1];
                 end
                 else begin
                     round = round + 1;
